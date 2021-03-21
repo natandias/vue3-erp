@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+
+  frontend:
+    container_name: frontend-vue-erp
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    depends_on: 
+      - backend
+    volumes:
+      - ./frontend/:/frontend
+    environment: 
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - '3000:3000'
+    networks:
+      - vue3-erp
+
+  backend:
+    container_name: backend-vue-erp
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    stdin_open: true
+    volumes:
+       - ./backend:/backend
+    ports:
+      - "5000:5000"
+    networks:
+      - vue3-erp
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "pgadmin"
+    ports:
+      - "15432:5432"
+    volumes:
+      - /run/media/natan/HOME/natan/Documentos/PROGRAMACAO/Vue3-ERP/db:/var/lib/postgresql/data 
+    networks:
+      - vue3-erp
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "pgadmin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "pgadmin"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres
+    networks:
+      - vue3-erp
+
+networks: 
+  vue3-erp:
